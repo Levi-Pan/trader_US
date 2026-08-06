@@ -4,13 +4,14 @@
 
 ## 使用
 
-统一配置位于 `standard_module/config.py`。股票池、请求超时、接口地址和输出目录都在该文件维护。
-
-API Key 使用环境变量配置，避免提交到 Git：
+首次使用时复制配置模板：
 
 ```powershell
-$env:ALPHAVANTAGE_API_KEY = "你的 API Key"
+Copy-Item .\standard_module\config.example.py .\standard_module\config.py
 ```
+
+然后在本地 `standard_module/config.py` 中填写自己的 Alpha Vantage API Key。
+真实配置文件已被 Git 忽略，不会提交；股票池、请求超时、接口地址和输出目录也在该文件维护。
 
 周一运行：
 

@@ -1,4 +1,5 @@
 config.json
+standard_module/config.py
 output/
 *.log
 __pycache__/
