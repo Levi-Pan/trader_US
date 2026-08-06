@@ -1,0 +1,6 @@
+config.json
+output/
+*.log
+__pycache__/
+*.py[cod]
+.idea/
