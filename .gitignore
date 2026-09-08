@@ -1,6 +1,8 @@
 config.json
 standard_module/config.py
 output/
+data/
+logs/
 *.log
 __pycache__/
 *.py[cod]

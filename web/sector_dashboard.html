@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>美股板块实时看板</title>
+
+    <style>
+        body {
+            margin: 0;
+            padding: 24px;
+            color: #e5e7eb;
+            background: #0f172a;
+            font-family: Arial, sans-serif;
+        }
+
+        h1 {
+            margin-bottom: 8px;
+        }
+
+        .description {
+            margin-bottom: 20px;
+            color: #94a3b8;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #1e293b;
+        }
+
+        th,
+        td {
+            padding: 12px;
+            text-align: center;
+            border-bottom: 1px solid #334155;
+        }
+
+        th {
+            color: #94a3b8;
+        }
+
+        .positive {
+            color: #22c55e;
+        }
+
+        .negative {
+            color: #ef4444;
+        }
+
+        .waiting {
+            color: #94a3b8;
+        }
+    </style>
+</head>
+
+<body>
+    <h1>美股板块实时看板</h1>
+
+    <div class="description">
+        Alpaca IEX实时行情，每5秒刷新
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>排名</th>
+                <th>ETF</th>
+                <th>板块</th>
+                <th>最新价</th>
+                <th>启动后涨幅</th>
+                <th>更新时间</th>
+            </tr>
+        </thead>
+
+        <tbody id="sector-body"></tbody>
+    </table>
+
+    <script>
+        async function refreshDashboard() {
+            try {
+                const response = await fetch("/api/sectors");
+                const result = await response.json();
+                const tableBody =
+                    document.getElementById("sector-body");
+
+                tableBody.innerHTML = "";
+
+                result.data.forEach((row, index) => {
+                    const change = row.change_pct;
+                    let changeText = "等待行情";
+                    let changeClass = "waiting";
+
+                    if (change !== null) {
+                        changeText = change.toFixed(2) + "%";
+                        changeClass =
+                            change >= 0 ? "positive" : "negative";
+                    }
+
+                    const tableRow =
+                        document.createElement("tr");
+
+                    tableRow.innerHTML = `
+                        <td>${index + 1}</td>
+                        <td>${row.symbol}</td>
+                        <td>${row.sector}</td>
+                        <td>
+                            ${row.price === null
+                                ? "-"
+                                : row.price.toFixed(2)}
+                        </td>
+                        <td class="${changeClass}">
+                            ${changeText}
+                        </td>
+                        <td>${row.updated_at || "-"}</td>
+                    `;
+
+                    tableBody.appendChild(tableRow);
+                });
+            } catch (error) {
+                console.error("看板刷新失败", error);
+            }
+        }
+
+        async function startDashboard() {
+            let refreshMilliseconds = 5000;
+
+            try {
+                const response = await fetch("/api/config");
+                const config = await response.json();
+                refreshMilliseconds = config.refresh_seconds * 1000;
+            } catch (error) {
+                console.error("读取看板配置失败，使用5秒刷新", error);
+            }
+
+            refreshDashboard();
+            setInterval(refreshDashboard, refreshMilliseconds);
+        }
+
+        startDashboard();
+    </script>
+</body>
+</html>

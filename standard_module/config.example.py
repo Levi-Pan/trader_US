@@ -26,3 +26,33 @@ EARNINGS_OUTPUT_DIR = PROJECT_DIR / "output"
 
 # Financial Modeling Prep；真实Key仅填写在被Git忽略的config.py中
 FMP_API_KEY = "YOUR_FMP_API_KEY"
+
+# Yahoo Finance 公司板块缓存
+YFINANCE_CACHE_PATH = EARNINGS_OUTPUT_DIR / "company_profiles.sqlite3"
+YFINANCE_CACHE_TTL_DAYS = 30
+YFINANCE_MAX_WORKERS = 3
+YFINANCE_MAX_RETRIES = 2
+
+# Alpaca实时行情
+ALPACA_API_KEY = "YOUR_API_KEY"
+ALPACA_API_SECRET = "YOUR_API_SECRET"
+ALPACA_DATA_FEED = "iex"
+
+# 实时板块ETF
+SECTOR_ETFS = {
+    "XLC": "通信服务",
+    "XLY": "非必需消费",
+    "XLP": "必需消费",
+    "XLE": "能源",
+    "XLF": "金融",
+    "XLV": "医疗",
+    "XLI": "工业",
+    "XLB": "材料",
+    "XLRE": "房地产",
+    "XLK": "科技",
+    "XLU": "公用事业",
+}
+
+REALTIME_REFRESH_SECONDS = 5
+DASHBOARD_HOST = "127.0.0.1"
+DASHBOARD_PORT = 8000
