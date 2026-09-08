@@ -1,5 +1,10 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
+# -*- coding:utf-8 -*-
+# author:PZW
+# datetime:2026/9/5 10:50
+# software:Vscode
+# brief : 交易程序统一配置模板
+
 """交易程序统一配置模板。复制为 config.py 后填写本地配置。"""
 
 from pathlib import Path
@@ -18,3 +23,6 @@ EARNINGS_SYMBOLS = []
 
 # 输出文件保存在项目根目录下的 output 文件夹
 EARNINGS_OUTPUT_DIR = PROJECT_DIR / "output"
+
+# Financial Modeling Prep；真实Key仅填写在被Git忽略的config.py中
+FMP_API_KEY = "YOUR_FMP_API_KEY"

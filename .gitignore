@@ -4,4 +4,9 @@ output/
 *.log
 __pycache__/
 *.py[cod]
+.venv/
+.venv_broken_*/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
 .idea/
