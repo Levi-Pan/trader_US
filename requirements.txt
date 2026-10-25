@@ -1,5 +1,0 @@
-yfinance==0.2.66
-multitasking==0.0.11
-alpaca-py==0.43.5
-fastapi==0.124.4
-uvicorn==0.33.0

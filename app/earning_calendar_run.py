@@ -5,52 +5,22 @@
 # software:Vscode
 # brief : 下一周美股财报日历任务入口
 
-import argparse
+import logging
 import os
 import sys
-from datetime import datetime
 
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-sys.path.append(BASE_DIR)
+if BASE_DIR not in sys.path:
+    sys.path.insert(0, BASE_DIR)
 
-from earnings_calendar.calendar_service import run_earning_calendar
-from private_module.private_log import get_logger
-
-
-logger = get_logger("earning_calendar_run")
-
-
-def parse_args():
-    """
-    解析启动参数。
-
-    :return: 命令行参数对象
-    """
-    parser = argparse.ArgumentParser(description="获取下一周美股财报日历")
-    parser.add_argument("--allow-any-day", action="store_true", help="允许非周一手工运行")
-    parser.add_argument("--run-date", help="指定运行日期 YYYY-MM-DD，仅用于补跑或测试")
-    return parser.parse_args()
-
-
-def main():
-    """
-    执行财报日历入口。
-
-    :return: 进程退出码
-    """
-    args = parse_args()
-    run_date = (
-        datetime.strptime(args.run_date, "%Y-%m-%d").date()
-        if args.run_date
-        else datetime.now().date()
-    )
-    return run_earning_calendar(run_date, args.allow_any_day)
+from data_sources.alpha_vantage import save_next_week_calendar
 
 
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO, format="%(asctime)s | %(levelname)s | %(message)s")
     try:
-        sys.exit(main())
+        save_next_week_calendar()
     except Exception:
-        logger.error("财报日历任务执行失败", exc_info=True)
+        logging.exception("财报日历获取失败")
         sys.exit(1)

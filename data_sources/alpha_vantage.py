@@ -8,15 +8,19 @@
 import csv
 import io
 import json
+import logging
+import os
 import urllib.error
 import urllib.parse
 import urllib.request
+from datetime import datetime, timedelta, timezone
 
 from standard_module.config import (
     ALPHA_VANTAGE_API_KEY,
     ALPHA_VANTAGE_API_URL,
     ALPHA_VANTAGE_HORIZON,
     ALPHA_VANTAGE_TIMEOUT,
+    EARNINGS_OUTPUT_DIR,
 )
 
 
@@ -50,3 +54,34 @@ def fetch_earning_calendar():
     if not rows or "reportDate" not in rows[0]:
         raise RuntimeError("Alpha Vantage 返回数据为空或缺少 reportDate 字段")
     return rows
+
+
+def save_next_week_calendar():
+    """
+    下载财报日历并将下一个自然周的原始记录保存为CSV。
+
+    :return: 输出文件绝对路径
+    """
+    today = datetime.now(timezone(timedelta(hours=8))).date()
+    start_date = today + timedelta(days=7 - today.weekday())
+    end_date = start_date + timedelta(days=6)
+    logging.info("获取%s至%s的财报日历", start_date, end_date)
+    rows = fetch_earning_calendar()
+    selected = []
+    for row in rows:
+        try:
+            report_date = datetime.strptime(row["reportDate"], "%Y-%m-%d").date()
+        except (KeyError, TypeError, ValueError):
+            logging.warning("跳过财报日期无效记录：%s", row.get("symbol", ""))
+            continue
+        if start_date <= report_date <= end_date:
+            selected.append(row)
+    selected.sort(key=lambda row: (row["reportDate"], row.get("symbol", "")))
+    os.makedirs(EARNINGS_OUTPUT_DIR, exist_ok=True)
+    output_path = os.path.join(str(EARNINGS_OUTPUT_DIR), "earnings_%s_%s.csv" % (start_date, end_date))
+    with open(output_path, "w", encoding="utf-8-sig", newline="") as output_file:
+        writer = csv.DictWriter(output_file, fieldnames=list(rows[0]))
+        writer.writeheader()
+        writer.writerows(selected)
+    logging.info("已保存%s条财报记录：%s", len(selected), output_path)
+    return output_path
